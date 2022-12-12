@@ -1,10 +1,10 @@
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.sql.*;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Retailanime extends JFrame{
-    private JPanel panelMain;
+    JPanel panelMain;
     private JButton customerButton;
     private JButton vendorButton;
     private JPanel navBar;
@@ -54,6 +54,12 @@ public class Retailanime extends JFrame{
     private JButton removeCart;
     private JTextField reviewTitle;
     private JPanel mainContent;
+    private JButton searchButton;
+    private JButton searchButton1;
+    private JButton searchButton2;
+    private JButton searchButton3;
+    private JTextField searchAnItemTextField;
+    private JTextField searchAnItemTextField1;
 
     public Retailanime()
             throws SQLException, ClassNotFoundException
@@ -376,110 +382,103 @@ public class Retailanime extends JFrame{
 
             }
         });
+        searchButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                CurrentView.setSelectedIndex(5);
+            }
+        });
+        searchAnItemTextField.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                searchAnItemTextField.setText("");
+            }
+        });
+        searchButton1.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                String str = searchAnItemTextField.getText();
+                System.out.println("Customer search output: " + str);
+                //Query the database about the item
+                resultQuery(str);
+            }
+        });
+
+
+
+
+
+        searchButton2.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                CurrentView2.setSelectedIndex(5);
+            }
+        });
+        searchAnItemTextField1.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                searchAnItemTextField1.setText("");
+            }
+        });
+        searchButton3.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                String str = searchAnItemTextField1.getText();
+                System.out.println("Vendor search output: " + str);
+                //Query the database about the item
+                resultQuery(str);
+            }
+        });
+    }
+    private static void resultQuery(String str) {
+        String DB_URL = "jdbc:mysql://triton.towson.edu:3360/jhunat1db";
+        String USERNAME = "jhunat1";
+        String PASSWORD = "COSC*laz7p";
+
+        try{
+            Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+            Statement stmt = conn.createStatement();
+            String sql = "SELECT * FROM Item WHERE ItemName LIKE " + "'" + str + "'";
+            ResultSet resultSet = stmt.executeQuery(sql);
+
+            while(resultSet.next()) {
+                Item_id = resultSet.getString("Item_id");
+                Descript = resultSet.getString("Descript");
+                ItemName = resultSet.getString("ItemName");
+                Media = resultSet.getString("Media");
+                Attributes = resultSet.getString("Attributes");
+                Stock = resultSet.getString("Stock");
+                Ordr_id = resultSet.getString("Ordr_id");
+                System.out.println(Item_id + ", " + Descript + ", " + ItemName + ", " + Media + ", " + Attributes + ", " + Stock + ", " + Ordr_id);
+
+                ResultQuery r = new ResultQuery();
+                r.setContentPane(r.Query);
+                r.setTitle("Result for " + str + "query");
+                r.setBounds(300, 200, 1280, 720);
+                r.setVisible(true);
+                r.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            }
+
+            stmt.close();
+            conn.close();
+
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    public static void main(String[] args)
-        throws SQLException, ClassNotFoundException
-    {
-        Retailanime h = new Retailanime();
-        h.setContentPane(h.panelMain);
-        h.setTitle("Retailanime");
-        h.setBounds(300, 200, 1280, 720);
-//        h.setSize(300, 400);
-        h.setVisible(true);
-        h.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-
-
-        /*String url
-                = "jdbc:mysql://triton.towson.edu:3360/jhunat1db"; // table details
-        String username = "jhunat1"; // MySQL credentials
-        String password = "COSC*laz7p";
-        String query = "select *from student"; // query to be run
-        Class.forName("com.mysql.cj.jdbc.Driver"); // Driver name
-
-        Connection con = DriverManager.getConnection(
-                url, username, password);
-        System.out.println(
-                "Connection Established successfully");
-        Statement st = con.createStatement();
-
-        ResultSet rs
-                = st.executeQuery(query); // Execute query
-        rs.next();
-        String name
-                = rs.getString("FirstName"); // Retrieve name from db
-
-
-
-
-        System.out.println(name); // Print result on console
-        st.close(); // close statement
-        con.close(); // close connection
-        System.out.println("Connection Closed....");*/
-    }
-
-
-    /*public class Order implements Serializable{
-        private int Order_id;
-        private int Progress;
-        private int C_id;
-        private int PostalCode;
-        private String Country;
-
-        public Order()
-        {
-
-        }
-
-        public Order(int Order_id,int Progress, int C_id, int PostalCode, String Country)
-        {
-            this.Order_id = Order_id;
-            this.Progress = Progress;
-            this.C_id = C_id;
-            this.PostalCode = PostalCode;
-            this.Country = Country;
-        }
-
-        public int getOrder_id() {
-            return Order_id;
-        }
-
-        public void setOrder_id(int order_id) {
-            Order_id = order_id;
-        }
-
-        public int getProgress() {
-            return Progress;
-        }
-
-        public void setProgress(int progress) {
-            Progress = progress;
-        }
-
-        public int getC_id() {
-            return C_id;
-        }
-
-        public void setC_id(int c_id) {
-            C_id = c_id;
-        }
-
-        public int getPostalCode() {
-            return PostalCode;
-        }
-
-        public void setPostalCode(int postalCode) {
-            PostalCode = postalCode;
-        }
-
-        public String getCountry() {
-            return Country;
-        }
-
-        public void setCountry(String country) {
-            Country = country;
-        }
-    }*/
+    public static String Item_id;
+    public static String Descript;
+    public static String ItemName;
+    public static String Media;
+    public static String Attributes;
+    public static String Stock;
+    public static String Ordr_id;
 }
-
