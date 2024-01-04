@@ -43,15 +43,16 @@ public class Login extends JDialog {
     private User getAuthenticatedUser(String email, String password) {
         User user = null;
 
-        final String DB_URL = "jdbc:mysql://triton.towson.edu:3360/jhunat1db";
-        final String USERNAME = "jhunat1";
-        final String PASSWORD = "COSC*laz7p";
+        final String databaseName = "mylite";
+        final String DB_URL = "jdbc:mysql://localhost:3306/" + databaseName;
+        final String USERNAME = "root";
+        final String PASSWORD = "123";
 
         try{
             Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
 
             Statement stmt = conn.createStatement();
-            String sql = "SELECT * FROM Admin_Users WHERE email=? AND password=?";
+            String sql = "SELECT * FROM login WHERE userEmail=? AND userPassword=?";
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setString(1, email);
             preparedStatement.setString(2, password);
@@ -60,11 +61,11 @@ public class Login extends JDialog {
 
             if (resultSet.next()) {
                 user = new User();
-                user.name = resultSet.getString("name");
-                user.email = resultSet.getString("email");
-                user.phone = resultSet.getString("phone");
-                user.address = resultSet.getString("address");
-                user.password = resultSet.getString("password");
+                user.email = resultSet.getString("userEmail");
+                user.password = resultSet.getString("userPassword");
+                user.name = resultSet.getString("userName");
+                user.phone = resultSet.getString("userPhone");
+                user.address = resultSet.getString("userAddress");
             }
 
             stmt.close();
